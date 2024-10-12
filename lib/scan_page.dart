@@ -20,10 +20,9 @@ class _ScanPageState extends State<ScanPage> {
   late List _scanResults;
   bool imageSelected = false;
 
+  /// This ensures the model is loaded before the UI
+  /// can interact with it
   @override
-
-  /// Called when the widget is inserted into the tree. This is where you can
-  /// load the TFLite model.
   void initState() {
     super.initState();
     loadModel();
@@ -34,9 +33,9 @@ class _ScanPageState extends State<ScanPage> {
     // Close the TFLite model, in case one is already open.
     Tflite.close();
 
-    // Open the TFLite model. The model is stored in the 'assets' directory
-    // of the Flutter app, and the labels are stored in a file called
-    // 'assets/labels.txt'.
+    // Open the TFLite model. The model and labels
+    // stored in the 'assets' directory of
+    // the Flutter app.
     await Tflite.loadModel(
       model: 'assets/pet_models.tflite',
       labels: 'assets/labels.txt',
@@ -44,18 +43,18 @@ class _ScanPageState extends State<ScanPage> {
   }
 
   /// Run the TFLite model on the given image.
+  // Run the TFLite model on the image. The result is a list of
+  // recognitions, where each recognition is a map with the following
+  // keys:
+  //
+  // * 'index': an integer index of the recognition
+  // * 'label': the label of the recognition
+  // * 'confidence': the confidence of the recognition, as a value between 0 and 1
+  //
+  // The 'numResults' parameter specifies the maximum number of
+  // recognitions to return. The 'threshold' parameter specifies the
+  // minimum confidence required for a recognition to be returned.
   Future scanImage(File image) async {
-    // Run the TFLite model on the image. The result is a list of
-    // recognitions, where each recognition is a map with the following
-    // keys:
-    //
-    // * 'index': an integer index of the recognition
-    // * 'label': the label of the recognition
-    // * 'confidence': the confidence of the recognition, as a value between 0 and 1
-    //
-    // The 'numResults' parameter specifies the maximum number of
-    // recognitions to return. The 'threshold' parameter specifies the
-    // minimum confidence required for a recognition to be returned.
     var recognitions = await Tflite.runModelOnImage(
       path: image.path,
       imageMean: 0.0,
@@ -70,8 +69,6 @@ class _ScanPageState extends State<ScanPage> {
       _scanResults = recognitions!;
       _image = image;
       imageSelected = true;
-
-      print(_scanResults);
     });
   }
 
@@ -135,9 +132,9 @@ class _ScanPageState extends State<ScanPage> {
     );
   }
 
-  /// Opens the image picker to select an image. If an image is selected,
-  /// calls [scanImage] to classify the image. If an error occurs, shows a
-  /// [SnackBar] with the error message.
+  /// This function opens the image picker, and if an image
+  /// is selected, it calls [scanImage] to classify the image.
+  /// If the widget is not mounted, it does not show the [SnackBar].
   Future<void> pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? selectedImage =
@@ -150,8 +147,8 @@ class _ScanPageState extends State<ScanPage> {
       // Run the TFLite model on the image and store the results
       await scanImage(imageFile);
     } on Exception catch (error) {
-      // If an error occurs, show a SnackBar with the error message. If the
-      // widget is not mounted, do nothing.
+      // If an error occurs, show a SnackBar with the error message.
+      // If the widget is not mounted, do nothing.
       mounted
           ? ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
