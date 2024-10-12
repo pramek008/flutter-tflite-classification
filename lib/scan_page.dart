@@ -107,22 +107,20 @@ class _ScanPageState extends State<ScanPage> {
                   ),
             const SizedBox(height: 20),
             imageSelected
-                ? _scanResults.isNotEmpty
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            '${_scanResults[0]['label']}',
-                            style: Theme.of(context).textTheme.headlineMedium,
-                          ),
-                          Text(
-                            'Confidence: ${_scanResults[0]['confidence']}',
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                          const SizedBox(height: 12),
-                        ],
-                      )
-                    : const Text('No face detected')
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        '${_scanResults[0]['label']}',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      Text(
+                        'Confidence: ${_scanResults[0]['confidence']}',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                  )
                 : const Text('No image selected'),
             const SizedBox(height: 20),
             ElevatedButton(
